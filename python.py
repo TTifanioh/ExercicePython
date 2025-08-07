@@ -1,22 +1,62 @@
 #coding:utf-8
+from itertools import product
 
-def truth_table():
-    print("Table de vérité pour (A and B) or (not B and C) or (A and not C) :")
-    print("A\tB\tC\t¬A\t¬B\t¬C\t(A and B)\t(not B and C)\t(A and not C)\tOutput")
-    canonical_form_1 = []
-    canonical_form_2 = []
-    for A in [False, True]:
-        for B in [False, True]:
-            for C in [False, True]:
-                not_A = not A
-                not_B = not B
-                not_C = not C
-                output = (A and B) or (not B and C) or (A and not C)  # Fonction logique
-                print(f"{int(A)}\t{int(B)}\t{int(C)}\t{int(not_A)}\t{int(not_B)}\t{int(not_C)}\t{int(A and B)}\t\t{int(not B and C)}\t\t{int(A and not C)}\t\t{int(output)}")
-                if output == 1:
-                    canonical_form_1.append(f"(A and B and {not_C})")
-                    canonical_form_2.append(f"({not_A} and {B} and {C})")
-    print("\nPremière forme canonique :", " or ".join(canonical_form_1))
-    print("Deuxième forme canonique :", " or ".join(canonical_form_2))
+# Définir la fonction logique ici
+def fonction_logique(A, B, C):
+    return (A and not B) or C
 
-truth_table()
+# Obtenir les variables utilisées
+variables = ['A', 'B', 'C']
+
+# Générer toutes les combinaisons possibles des valeurs des variables
+combinaisons = list(product([0, 1], repeat=len(variables)))
+
+# Liste pour stocker les lignes de la table de vérité
+table_verite = []
+
+print("Table de vérité :")
+print(" | ".join(variables) + " | F")
+print("-" * (len(variables) * 4 + 5))
+
+# Génération de la table de vérité
+for ligne in combinaisons:
+    valeurs = dict(zip(variables, ligne))
+    resultat = fonction_logique(**valeurs)
+    table_verite.append((ligne, int(resultat)))
+    print(" | ".join(str(bit) for bit in ligne) + f" | {int(resultat)}")
+
+# Construction de la première forme canonique (FDN)
+fdn = []
+for ligne, result in table_verite:
+    if result == 1:
+        terme = []
+        for var, val in zip(variables, ligne):
+            if val == 1:
+                terme.append(var)
+            else:
+                terme.append(f"¬{var}")
+        fdn.append("(" + " ∧ ".join(terme) + ")")
+
+# Construction de la deuxième forme canonique (FCN)
+fcn = []
+for ligne, result in table_verite:
+    if result == 0:
+        terme = []
+        for var, val in zip(variables, ligne):
+            if val == 0:
+                terme.append(var)
+            else:
+                terme.append(f"¬{var}")
+        fcn.append("(" + " ∨ ".join(terme) + ")")
+
+print("\nPremière forme canonique (FDN) :")
+if fdn:
+    print(" ∨ ".join(fdn))
+else:
+    print("Constamment 0")
+
+print("\nDeuxième forme canonique (FCN) :")
+if fcn:
+    print(" ∧ ".join(fcn))
+else:
+    print("Constamment 1")
