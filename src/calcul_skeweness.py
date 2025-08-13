@@ -1,5 +1,5 @@
 import numpy as np
-import stats_util as rec_moy,rec_variance,rec_ecart_type
+from stats_util import rec_moy,rec_variance,rec_ecart_type
 def skeweness(height_list):
   n=len(height_list)
   et3=rec_ecart_type(height_list)**3
